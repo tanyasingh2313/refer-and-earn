@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Auth Frontend</title>
+</head>
+<body>
+    <h1>Auth Demo</h1>
+
+    <!-- REGISTER -->
+    <h2>Register</h2>
+    <form id="registerForm">
+        <input type="text" id="regName" placeholder="Name" required><br><br>
+        <input type="email" id="regEmail" placeholder="Email" required><br><br>
+        <input type="password" id="regPassword" placeholder="Password" required><br><br>
+        <button type="submit">Create User</button>
+    </form>
+    <p id="regResult"></p>
+
+    <hr>
+
+    <!-- LOGIN -->
+    <h2>Login</h2>
+    <form id="loginForm">
+        <input type="email" id="logEmail" placeholder="Email" required><br><br>
+        <input type="password" id="logPassword" placeholder="Password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+    <p id="logResult"></p>
+
+    <!-- PROFILE -->
+    <hr>
+    <button id="profileBtn">Get Profile (needs login)</button>
+    <p id="profileResult"></p>
+
+    <script>
+        // REGISTER
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const body = {
+                name: document.getElementById("regName").value,
+                email: document.getElementById("regEmail").value,
+                password: document.getElementById("regPassword").value,
+            };
+
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+
+            const data = await res.json();
+            document.getElementById("regResult").innerText = JSON.stringify(data);
+        });
+
+        // LOGIN
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const body = {
+                email: document.getElementById("logEmail").value,
+                password: document.getElementById("logPassword").value,
+            };
+
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include", // cookie receive karega
+                body: JSON.stringify(body),
+            });
+
+            const data = await res.json();
+            document.getElementById("logResult").innerText = JSON.stringify(data);
+        });
+
+        // PROFILE (protected route)
+        document.getElementById("profileBtn").addEventListener("click", async () => {
+            const res = await fetch("/api/auth/profile", {
+                method: "GET",
+                credentials: "include", // token cookie bhejega
+            });
+
+            const text = await res.text();
+            document.getElementById("profileResult").innerText = text;
+        });
+    </script>
+</body>
+</html>
